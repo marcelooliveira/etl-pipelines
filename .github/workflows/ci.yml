@@ -43,4 +43,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: crypto-database
-          path: data/crypto.db
+          path: home/runner/work/etl-pipelines/etl-pipelines/data/crypto.db
