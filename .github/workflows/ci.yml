@@ -30,6 +30,15 @@ jobs:
       - name: List files for debugging
         run: ls -lR
 
+      - name: Print working directory
+        run: pwd
+
+      - name: List root files and folders
+        run: ls -la
+
+      - name: Recursively list files (up to 2 levels deep)
+        run: ls -R | head -n 100
+
       - name: Upload SQLite DB as artifact
         uses: actions/upload-artifact@v4
         with:
