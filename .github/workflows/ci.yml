@@ -26,7 +26,7 @@ jobs:
         run: python etl.py
 
       - name: Upload SQLite DB as artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: crypto-database
           path: data/crypto.db
