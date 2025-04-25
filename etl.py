@@ -59,8 +59,8 @@ def load_data(df):
         # Change the db_file to the absolute path
         db_file = os.path.join(sys._MEIPASS, "crypto.db")
 
-    print("db_file:")
-    print(db_file)
+    log_info(logger, "db_file:")
+    log_info(logger, db_file)
 
     engine = create_engine(db_file)
     df.to_sql("cryptocurrencies", engine, if_exists="replace", index=False)
