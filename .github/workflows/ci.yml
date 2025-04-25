@@ -23,7 +23,12 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run ETL pipeline
-        run: python etl.py
+        run: |
+          set -e  # fail fast on error
+          python etl.py
+
+      - name: List files for debugging
+        run: ls -lR
 
       - name: Upload SQLite DB as artifact
         uses: actions/upload-artifact@v4
