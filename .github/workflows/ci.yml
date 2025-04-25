@@ -23,24 +23,18 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run ETL pipeline
+        run: python etl.py
+
+      - name: List files *before* upload
         run: |
-          set -e  # fail fast on error
-          python etl.py
-
-      - name: List files for debugging
-        run: ls home/runner/work/etl-pipelines/ -lR
-
-      - name: Print working directory
-        run: pwd
-
-      - name: List root files and folders
-        run: ls home/runner/work/etl-pipelines/ -la
-
-      - name: Recursively list files (up to 2 levels deep)
-        run: ls home/runner/work/etl-pipelines/ -R | head -n 100
-
+          echo "Current directory:"
+          pwd
+          echo "Listing files in data directory:"
+          ls -l data/
+          echo "Listing files in the root directory:"
+          ls -l
       - name: Upload SQLite DB as artifact
         uses: actions/upload-artifact@v4
         with:
           name: crypto-database
-          path: home/runner/work/etl-pipelines/etl-pipelines/data/crypto.db
+          path: data/crypto.db
