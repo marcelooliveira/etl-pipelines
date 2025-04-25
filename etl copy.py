@@ -1,10 +1,12 @@
+import os
+import sys
 import requests
 import pandas as pd
 import pandera as pa
 import sqlite3
 from sqlalchemy import create_engine
 from prefect import flow, task, get_run_logger
-import os
+
 
 @task(retries=3, retry_delay_seconds=5)
 def extract_data():
@@ -35,7 +37,7 @@ def validate_data(df):
         "Market Cap": pa.Column(int),
         "Total Volume": pa.Column(int),
     })
-    return schema.validate(df)
+    return schema.validate(df)    
 
 @task
 def transform_data(data):
@@ -51,12 +53,16 @@ def transform_data(data):
 def load_data(df):
     logger = get_run_logger()
     log_info(logger, "Loading data into SQLite database")
-    db_path = "data/crypto.db"  # Define the database path
-    db_dir = os.path.dirname(db_path) #get the directory
-    if db_dir: # Check if the directory exists
-        os.makedirs(db_dir, exist_ok=True)  # Create the directory if it doesn't exist
-        log_info(logger, f"Database directory created: {db_dir}") #log
-    engine = create_engine(f"sqlite:///{db_path}") #use the full path
+    db_file = "sqlite:///data/crypto.db"
+
+    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+        # Change the db_file to the absolute path
+        db_file = os.path.join(sys._MEIPASS, "crypto.db")
+
+    log_info(logger, "db_file:")
+    log_info(logger, db_file)
+
+    engine = create_engine(db_file)
     df.to_sql("cryptocurrencies", engine, if_exists="replace", index=False)
     log_info(logger, "Data successfully loaded")
 
