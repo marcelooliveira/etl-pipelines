@@ -5,10 +5,11 @@ import sqlite3
 from sqlalchemy import create_engine
 from prefect import flow, task, get_run_logger
 
+logger = get_run_logger()
+
 @task(retries=3, retry_delay_seconds=5)
 def extract_data():
-    logger = get_run_logger()
-    logger.info("Fetching cryptocurrency data from CoinGecko API")
+    log_info("Fetching cryptocurrency data from CoinGecko API")
     url = "https://api.coingecko.com/api/v3/coins/markets"
     params = {
         "vs_currency": "usd",
@@ -19,13 +20,12 @@ def extract_data():
     }
     response = requests.get(url, params=params)
     response.raise_for_status()
-    logger.info("Data extraction successful")
+    log_info("Data extraction successful")
     return response.json()
 
 @task
 def validate_data(df):
-    logger = get_run_logger()
-    logger.info("Validating data schema")
+    log_info("Validating data schema")
     schema = pa.DataFrameSchema({
         "Id": pa.Column(str),
         "Symbol": pa.Column(str),
@@ -38,21 +38,19 @@ def validate_data(df):
 
 @task
 def transform_data(data):
-    logger = get_run_logger()
-    logger.info("Transforming data")
+    log_info("Transforming data")
     df = pd.json_normalize(data)
     df = df[["id", "symbol", "name", "current_price", "market_cap", "total_volume"]]
     df.columns = [col.replace("_", " ").title() for col in df.columns]
-    logger.info("Data transformation complete")
+    log_info("Data transformation complete")
     return df
 
 @task
 def load_data(df):
-    logger = get_run_logger()
-    logger.info("Loading data into SQLite database")
+    log_info("Loading data into SQLite database")
     engine = create_engine("sqlite:///data/crypto.db")
     df.to_sql("cryptocurrencies", engine, if_exists="replace", index=False)
-    logger.info("Data successfully loaded")
+    log_info("Data successfully loaded")
 
 @flow(name="crypto-etl-pipeline")
 def etl_pipeline():
@@ -61,3 +59,6 @@ def etl_pipeline():
     validated_data = validate_data(cleaned_data)
     load_data(validated_data)
 
+def log_info(msg):
+    logger.info(msg)
+    print(msg)
