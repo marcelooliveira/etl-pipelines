@@ -65,3 +65,8 @@ def etl_pipeline():
 def log_info(logger, msg):
     logger.info(msg)
     print(msg)
+
+raw_data = extract_data()
+cleaned_data = transform_data(raw_data)
+validated_data = validate_data(cleaned_data)
+load_data(validated_data)
