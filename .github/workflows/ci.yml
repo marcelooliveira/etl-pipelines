@@ -9,7 +9,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -22,3 +24,9 @@ jobs:
 
       - name: Run ETL pipeline
         run: python etl.py
+
+      - name: Upload SQLite DB as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: crypto-database
+          path: data/crypto.db
