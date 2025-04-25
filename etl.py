@@ -1,3 +1,5 @@
+import os
+import sys
 import requests
 import pandas as pd
 import pandera as pa
@@ -51,7 +53,13 @@ def transform_data(data):
 def load_data(df):
     logger = get_run_logger()
     log_info(logger, "Loading data into SQLite database")
-    engine = create_engine("sqlite:///data/crypto.db")
+    db_file = "sqlite:///data/crypto.db"
+
+    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+        # Change the db_file to the absolute path
+        db_file = os.path.join(sys._MEIPASS, db_file)
+
+    engine = create_engine(db_file)
     df.to_sql("cryptocurrencies", engine, if_exists="replace", index=False)
     log_info(logger, "Data successfully loaded")
 
