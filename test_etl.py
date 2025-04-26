@@ -5,7 +5,7 @@ from etl import transform_data, validate_data
 class TestETLPipeline(unittest.TestCase):
 
     def test_transform_data(self):
-        raw_data = [{"id": "bitcoin", "symbol": "btc", "name": "Bitcoin", "current_price": 50000, "market_cap": 900000000000, "total_volume": 30000000000}]
+        raw_data = [{"name": "Bitcoin", "current_price": 50000, "market_cap": 900000000000, "total_volume": 30000000000}]
         transformed_df = transform_data(raw_data)
         expected_columns = ["Name", "Current Price", "Market Cap", "Total Volume"]
         self.assertEqual(list(transformed_df.columns), expected_columns)
