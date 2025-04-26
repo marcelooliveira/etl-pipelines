@@ -36,7 +36,7 @@ def validate_data(df):
 def transform_data(data):
     print("Transforming data")
     df = pd.json_normalize(data)
-    df = df[["id", "symbol", "name", "current_price", "market_cap", "total_volume"]]
+    df = df[["name", "current_price", "market_cap", "total_volume"]]
     df.columns = [col.replace("_", " ").title() for col in df.columns]
     print("Data transformation complete")
     return df
@@ -95,12 +95,12 @@ def create_markdown_table(df):
     df['Current Price'] = df['Current Price'].apply(format_currency)
     df['Market Cap'] = df['Market Cap'].apply(format_market_cap)
     df['Total Volume'] = df['Total Volume'].apply(format_market_cap)
-    df = df[['Icon', 'Id', 'Symbol', 'Name', 'Current Price', 'Market Cap', 'Total Volume']]
+    df = df[['Icon', 'Name', 'Current Price', 'Market Cap', 'Total Volume']]
 
     # Create the Markdown string with right alignment for the last 3 columns
     markdown_lines = ["| " + " | ".join(df.columns) + " |"]
     # markdown_lines.append("|" + " ---|" * len(df.columns))
-    markdown_lines.append("| ---| ---| ---| ---| ---:| ---:| ---:|")
+    markdown_lines.append("| ---| ---| ---:| ---:| ---:|")
     for index, row in df.iterrows():
         row_values = [str(val) for val in row.tolist()]
         # Right-align the last three columns
@@ -121,7 +121,7 @@ def load_data(df):
     description = "Data obtained from the CoinGecko API."
     markdown_table = create_markdown_table(df.copy()) # Use a copy
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S %Z%z")
-    footer = f"*Last updated: {timestamp}*"
+    footer = f"*Last updated: {timestamp.strip()}*"
 
     with open(md_path, "w") as f:
         f.write(title + "\n\n")
