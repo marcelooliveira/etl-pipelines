@@ -46,3 +46,9 @@ jobs:
       with:
         name: crypto-database
         path: data/crypto.db
+
+    - name: Upload markdown table as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: crypto-markdown
+        path: data/crypto.md
