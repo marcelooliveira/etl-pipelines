@@ -51,11 +51,24 @@ def load_data(df):
     df.to_sql("cryptocurrencies", engine, if_exists="replace", index=False)
     print("Data successfully loaded")
 
+def load_md(df):
+    print("Saving data to Markdown file")
+    md_path = "data/crypto.md"  # Define the Markdown file path
+    md_dir = os.path.dirname(md_path) # Get the directory
+    if md_dir: # Check if the directory exists
+        os.makedirs(md_dir, exist_ok=True)  # Create the directory if it doesn't exist
+        print(f"Markdown directory created: {md_dir}") # Log
+    df_markdown = df.to_markdown(index=False)
+    with open(md_path, "w") as f:
+        f.write(df_markdown)
+    print(f"Data successfully saved to: {md_path}")
+
 def etl_pipeline():
     raw_data = extract_data()
     cleaned_data = transform_data(raw_data)
     validated_data = validate_data(cleaned_data)
     load_data(validated_data)
+    load_md(validated_data)
 
 if __name__ == "__main__":
     etl_pipeline()
