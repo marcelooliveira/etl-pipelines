@@ -5,9 +5,7 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-  schedule:
-    - cron: "*/5 * * * *"  # Runs every 5 minutes
-
+  
 jobs:
   build:
     runs-on: ubuntu-latest
