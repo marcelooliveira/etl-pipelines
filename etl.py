@@ -36,7 +36,7 @@ def validate_data(df):
 def transform_data(data):
     print("Transforming data")
     df = pd.json_normalize(data)
-    df = df[["name", "current_price", "market_cap", "total_volume"]]
+    df = df[["id", "symbol", "name", "current_price", "market_cap", "total_volume"]]
     df.columns = [col.replace("_", " ").title() for col in df.columns]
     print("Data transformation complete")
     return df
@@ -118,7 +118,7 @@ def load_data(df):
         print(f"Markdown directory created: {md_dir}") # Log
 
     title = "# Top 10 Cryptocurrencies by Market Cap"
-    description = "Data obtained from the CoinGecko API."
+    description = "Data obtained from the [CoinGecko API](https://api.coingecko.com/api/v3/coins/markets)."
     markdown_table = create_markdown_table(df.copy()) # Use a copy
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S %Z%z")
     footer = f"*Last updated: {timestamp.strip()}*"
