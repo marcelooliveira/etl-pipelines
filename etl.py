@@ -68,31 +68,45 @@ def format_market_cap(value):
     else:
         return f"${value:,.2f}"
 
-def get_crypto_icon(symbol):
-    """Returns an emoji or a default icon for a given cryptocurrency symbol."""
-    icons = {
-        "btc": "₿",  # Bitcoin symbol
-        "eth": "Ξ",  # Ethereum symbol
-        "usdt": "₮", # Tether symbol
-        "xrp": "Ripple", # No widely recognized emoji, using text
-        "bnb": "BNB", # Binance Coin symbol
-        "sol": "☀️", # Solana sun emoji
-        "usdc": "Circle", # No widely recognized emoji, using text
-        "doge": "🐕", # Dogecoin dog emoji
-        "ada": "ADA", # Cardano symbol
-        "trx": "TRX", # TRON symbol
+def get_crypto_icon_url(symbol):
+    """Returns the URL of a tiny icon for a given cryptocurrency symbol."""
+    base_url = "https://raw.githubusercontent.com/cjdowner/cryptocurrency-icons/master/32/color/"
+    icon_map = {
+        "btc": "btc.png",
+        "eth": "eth.png",
+        "usdt": "usdt.png",
+        "xrp": "xrp.png",
+        "bnb": "bnb.png",
+        "sol": "sol.png",
+        "usdc": "usdc.png",
+        "doge": "doge.png",
+        "ada": "ada.png",
+        "trx": "trx.png",
     }
-    return icons.get(symbol.lower(), "🪙") # Default coin emoji
+    filename = icon_map.get(symbol.lower())
+    if filename:
+        return f'<img src="{base_url}{filename}" width="16" height="16" align="absmiddle"> '
+    else:
+        return "🪙 " # Default coin emoji as fallback
 
 def create_markdown_table(df):
-    """Creates a formatted Markdown table from the DataFrame."""
-    df['Icon'] = df['Symbol'].apply(get_crypto_icon)
+    """Creates a formatted Markdown table with right-aligned numerical columns."""
+    df['Icon'] = df['Symbol'].apply(get_crypto_icon_url)
     df['Current Price'] = df['Current Price'].apply(format_currency)
     df['Market Cap'] = df['Market Cap'].apply(format_market_cap)
     df['Total Volume'] = df['Total Volume'].apply(format_market_cap)
     df = df[['Icon', 'Id', 'Symbol', 'Name', 'Current Price', 'Market Cap', 'Total Volume']]
-    markdown_table = df.to_markdown(index=False)
-    return markdown_table
+
+    # Create the Markdown string with right alignment for the last 3 columns
+    markdown_lines = ["| " + " | ".join(df.columns) + " |"]
+    markdown_lines.append("|" + " ---|" * len(df.columns))
+    for index, row in df.iterrows():
+        row_values = [str(val) for val in row.tolist()]
+        # Right-align the last three columns
+        row_values[-3:] = [f"> {val}" for val in row_values[-3:]]
+        markdown_lines.append("| " + " | ".join(row_values) + " |")
+
+    return "\n".join(markdown_lines)
 
 def load_data(df):
     print("Saving cryptocurrency data to Markdown file")
@@ -103,10 +117,10 @@ def load_data(df):
         print(f"Markdown directory created: {md_dir}") # Log
 
     title = "# Top 10 Cryptocurrencies by Market Cap"
-    description = "This table displays the top 10 cryptocurrencies by market capitalization, showing their current price, market cap, and total volume."
-    markdown_table = create_markdown_table(df.copy()) # Use a copy to avoid modifying the original DataFrame
+    description = "Data obtained from the CoinGecko API."
+    markdown_table = create_markdown_table(df.copy()) # Use a copy
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S %Z%z")
-    footer = f"*Last updated: {timestamp} (Guarulhos, State of São Paulo, Brazil)*"
+    footer = f"*Last updated: {timestamp}*"
 
     with open(md_path, "w") as f:
         f.write(title + "\n\n")
@@ -115,7 +129,7 @@ def load_data(df):
         f.write(footer + "\n")
 
     print(f"Cryptocurrency data successfully saved to: {md_path}")
-
+    
 def etl_pipeline():
     raw_data = extract_data()
     cleaned_data = transform_data(raw_data)
