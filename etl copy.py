@@ -67,6 +67,3 @@ def etl_pipeline():
     validated_data = validate_data(cleaned_data)
     load_data(validated_data)
 
-if __name__ == "__main__":
-    # Run the flow
-    etl_pipeline()
