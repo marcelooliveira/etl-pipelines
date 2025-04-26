@@ -41,12 +41,6 @@ jobs:
         echo "Listing files in the root directory:"
         ls -l
 
-    - name: Upload SQLite DB as artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: crypto-database
-        path: data/crypto.db
-
     - name: Upload markdown table as artifact
       uses: actions/upload-artifact@v4
       with:
