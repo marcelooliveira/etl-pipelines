@@ -8,6 +8,8 @@ build:
       image_name: mclricardo/etl-image
       tag: latest
       dockerfile: auto
+      build_context: .
+      base_image: prefecthq/prefect:3-latest   # 👈 ADD THIS LINE
 
 push:
   - prefect_docker.deployments.steps.push_docker_image:
