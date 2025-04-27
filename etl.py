@@ -21,28 +21,24 @@ def extract_data():
     print("Data extraction successful")
     return response.json()
 
-# def validate_data(df):
-#     print("Validating data schema")
-#     schema = pa.DataFrameSchema({
-#         "id": pa.Column(str),
-#         "symbol": pa.Column(str),
-#         "name": pa.Column(str),
-#         "current_price": pa.Column(float),
-#         "market_cap": pa.Column(int),
-#         "total_volume": pa.Column(float),
-#         "market_cap_rank": pa.Column(int),
-#         "price_change_percentage_24h": pa.Column(float),
-#         "circulating_supply": pa.Column(float),
-#         "total_supply": pa.Column(float, nullable=True),
-#     })
-#     return schema.validate(df)
+def validate_data(df):
+    print("Validating data schema")
+    schema = pa.DataFrameSchema({
+        "ID": pa.Column(str),
+        "Symbol": pa.Column(str),
+        "Name": pa.Column(str),
+        "Current Price": pa.Column(float),
+        "Market Cap": pa.Column(int),
+        "Total Volume": pa.Column(float),
+    })
+    return schema.validate(df)
 
 def transform_data(data):
     print("Transforming data")
     df = pd.json_normalize(data)
 
-    # Select relevant columns
-    df_transformed = df[[
+    # Select and rename columns
+    df = df[[
         "id", "symbol", "name", "image", "current_price", "market_cap",
         "market_cap_rank", "fully_diluted_valuation", "total_volume",
         "high_24h", "low_24h", "price_change_24h",
@@ -50,11 +46,9 @@ def transform_data(data):
         "market_cap_change_percentage_24h", "circulating_supply",
         "total_supply", "max_supply", "ath", "ath_change_percentage",
         "ath_date", "atl", "atl_change_percentage", "atl_date",
-        "last_updated"
-    ]].copy() # Create a copy to avoid SettingWithCopyWarning
-
-    # Rename columns for better readability
-    df_transformed.columns = [
+        "last_updated", "price_change_percentage_1h", "sparkline_in_7d.price"
+    ]]
+    df.columns = [
         "ID", "Symbol", "Name", "Image URL", "Current Price", "Market Cap",
         "Market Cap Rank", "Fully Diluted Valuation", "Total Volume",
         "High 24h", "Low 24h", "Price Change 24h",
@@ -62,30 +56,31 @@ def transform_data(data):
         "Market Cap Change % 24h", "Circulating Supply",
         "Total Supply", "Max Supply", "ATH", "ATH Change %",
         "ATH Date", "ATL", "ATL Change %", "ATL Date",
-        "Last Updated"
+        "Last Updated", "Price Change % 1h", "Sparkline 7d"
     ]
 
     # Convert timestamps to datetime objects
-    for col in ["ATH Date", "ATL Date", "Last Updated"]:
-        if col in df_transformed.columns:
-            df_transformed[col] = pd.to_datetime(df_transformed[col])
+    df["ATH Date"] = pd.to_datetime(df["ATH Date"])
+    df["ATL Date"] = pd.to_datetime(df["ATL Date"])
+    df["Last Updated"] = pd.to_datetime(df["Last Updated"])
 
-    # Calculate price change from ATH and ATL in USD
-    df_transformed["Price Diff from ATH"] = df_transformed["Current Price"] - df_transformed["ATH"]
-    df_transformed["Price Diff from ATL"] = df_transformed["Current Price"] - df_transformed["ATL"]
+    # Calculate additional metrics
+    df["Price Change from ATH"] = df["Current Price"] - df["ATH"]
+    df["Price Change from ATL"] = df["Current Price"] - df["ATL"]
 
-    # Calculate percentage difference from ATH and ATL
-    df_transformed["% Diff from ATH"] = (df_transformed["Price Diff from ATH"] / df_transformed["ATH"]) * 100
-    df_transformed["% Diff from ATL"] = (df_transformed["Price Diff from ATL"] / df_transformed["ATL"]) * 100
+    # Format currency columns
+    currency_cols = ["Current Price", "Market Cap", "Fully Diluted Valuation", "Total Volume", "High 24h", "Low 24h", "ATH", "ATL"]
+    for col in currency_cols:
+        if col in df.columns:
+            df[col] = df[col].apply(lambda x: f"${x:,.2f}")
 
-    # Add a column indicating if the current price is closer to ATH or ATL
-    df_transformed["Closer To"] = df_transformed.apply(
-        lambda row: "ATH" if abs(row["Price Diff from ATH"]) < abs(row["Price Diff from ATL"]) else "ATL",
-        axis=1
-    )
-
+    # Format percentage columns
+    percentage_cols = ["Price Change % 24h", "Market Cap Change % 24h", "ATH Change %", "ATL Change %", "Price Change % 1h"]
+    for col in percentage_cols:
+        if col in df.columns:
+          df[col] = df[col].apply(lambda x: f"{x:.2f}%")
     print("Data transformation complete")
-    return df_transformed
+    return df
 
 def format_currency(value):
     """Formats a numeric value as currency with commas for thousands and 2 decimal places."""
@@ -191,8 +186,8 @@ def load_data(df):
 def etl_pipeline():
     raw_data = extract_data()
     cleaned_data = transform_data(raw_data)
-    # validated_data = validate_data(cleaned_data)
-    # load_data(validated_data)
+    validated_data = validate_data(cleaned_data)
+    load_data(validated_data)
     load_data(cleaned_data)
 
 if __name__ == "__main__":
