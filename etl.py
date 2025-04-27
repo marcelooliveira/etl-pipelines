@@ -24,7 +24,7 @@ def extract_data():
 def validate_data(df):
     print("Validating data schema")
     schema = pa.DataFrameSchema({
-        "ID": pa.Column(str),
+        "Id": pa.Column(str),
         "Symbol": pa.Column(str),
         "Name": pa.Column(str),
         "Current Price": pa.Column(float),
