@@ -29,7 +29,7 @@ def validate_data(df):
         "Name": pa.Column(str),
         "Current Price": pa.Column(float),
         "Market Cap": pa.Column(int),
-        "Total Volume": pa.Column(float),
+        "Total Volume": pa.Column(int),
     })
     return schema.validate(df)
 
