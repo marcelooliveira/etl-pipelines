@@ -28,8 +28,8 @@ def validate_data(df):
         "Symbol": pa.Column(str),
         "Name": pa.Column(str),
         "Current Price": pa.Column(float),
-        "Price Change 24h": pa.Column(float),
-        "Price Change % 24h": pa.Column(float),
+        "Price Change 24H": pa.Column(float),
+        "Price Change % 24H": pa.Column(float),
         "Market Cap": pa.Column(int),
     })
     return schema.validate(df)
