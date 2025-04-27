@@ -45,7 +45,8 @@ def transform_data(data):
         "price_change_percentage_24h", "market_cap_change_24h",
         "market_cap_change_percentage_24h", "circulating_supply",
         "total_supply", "max_supply", "ath", "ath_change_percentage",
-        "ath_date", "atl", "atl_change_percentage", "atl_date"
+        "ath_date", "atl", "atl_change_percentage", "atl_date",
+        "last_updated"
     ]]
     df.columns = [
         "ID", "Symbol", "Name", "Image URL", "Current Price", "Market Cap",
@@ -54,7 +55,8 @@ def transform_data(data):
         "Price Change % 24h", "Market Cap Change 24h",
         "Market Cap Change % 24h", "Circulating Supply",
         "Total Supply", "Max Supply", "ATH", "ATH Change %",
-        "ATH Date", "ATL", "ATL Change %", "ATL Date"
+        "ATH Date", "ATL", "ATL Change %", "ATL Date",
+        "Last Updated"
     ]
 
     # Convert timestamps to datetime objects
