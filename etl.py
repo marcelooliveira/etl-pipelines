@@ -90,13 +90,13 @@ def create_markdown_table(df):
     df['Market Cap'] = df['Market Cap'].apply(format_market_cap)
     df = df[['Icon', 'Name', 'Current Price', 'Price Change 24H', 'Market Cap']]
 
-    # Create the Markdown string with right alignment for the last 2 columns
+    # Create the Markdown string with right alignment for the last 3 columns
     markdown_lines = ["| " + " | ".join(df.columns) + " |"]
-    markdown_lines.append("| ---| ---| ---:| ---:|")
+    markdown_lines.append("| ---| ---| ---:| ---:| ---:|")
     for index, row in df.iterrows():
         row_values = [str(val) for val in row.tolist()]
-        # Right-align the last two columns
-        row_values[-2:] = [f" {val}" for val in row_values[-2:]]
+        # Right-align the last three columns
+        row_values[-3:] = [f" {val}" for val in row_values[-2:]]
         markdown_lines.append("| " + " | ".join(row_values) + " |")
 
     return "\n".join(markdown_lines)
