@@ -28,8 +28,8 @@ def validate_data(df):
         "Symbol": pa.Column(str),
         "Name": pa.Column(str),
         "Current Price": pa.Column(object),
-        "Market Cap": pa.Column(int),
-        "Total Volume": pa.Column(int),
+        "Market Cap": pa.Column(object),
+        "Total Volume": pa.Column(object),
     })
     return schema.validate(df)
 
