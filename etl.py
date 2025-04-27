@@ -1,8 +1,6 @@
 import requests
 import pandas as pd
 import pandera as pa
-import sqlite3
-from sqlalchemy import create_engine
 import os
 from datetime import datetime
 
@@ -39,6 +37,14 @@ def transform_data(data):
     df = pd.json_normalize(data)
     df = df[["id", "symbol", "name", "current_price", "price_change_24h", "price_change_percentage_24h", "market_cap"]]
     df.columns = [col.replace("_", " ").title() for col in df.columns]
+
+    # Combine "Price Change 24H" and "Price Change Percentage 24H"
+    df['Price Change 24H'] = df.apply(
+        lambda row: f"{row['Price Change 24H']:.2f} ({row['Price Change Percentage 24H']:.2f}%)",
+        axis=1
+    )
+    df = df.drop(columns=['Price Change Percentage 24H'])
+
     print("Data transformation complete")
     return df
 
@@ -82,19 +88,16 @@ def create_markdown_table(df):
     """Creates a formatted Markdown table with right-aligned numerical columns."""
     df['Icon'] = df['Symbol'].apply(get_crypto_icon_url)
     df['Current Price'] = df['Current Price'].apply(format_currency)
-    df['Price Change 24H'] = df['Price Change 24H'].apply(format_currency)
-    df['Price Change Percentage 24H'] = df['Price Change Percentage 24H'].apply(lambda x: f"{x:.2f}%")
     df['Market Cap'] = df['Market Cap'].apply(format_market_cap)
-    df = df[['Icon', 'Name', 'Current Price', 'Price Change 24H', 'Price Change Percentage 24H', 'Market Cap']]
+    df = df[['Icon', 'Name', 'Current Price', 'Price Change 24H', 'Market Cap']]
 
-    # Create the Markdown string with right alignment for the last 3 columns
+    # Create the Markdown string with right alignment for the last 2 columns
     markdown_lines = ["| " + " | ".join(df.columns) + " |"]
-    # markdown_lines.append("|" + " ---|" * len(df.columns))
-    markdown_lines.append("| ---| ---| ---:| ---:| ---:|")
+    markdown_lines.append("| ---| ---| ---:| ---:|")
     for index, row in df.iterrows():
         row_values = [str(val) for val in row.tolist()]
-        # Right-align the last three columns
-        row_values[-3:] = [f" {val}" for val in row_values[-3:]]
+        # Right-align the last two columns
+        row_values[-2:] = [f" {val}" for val in row_values[-2:]]
         markdown_lines.append("| " + " | ".join(row_values) + " |")
 
     return "\n".join(markdown_lines)
