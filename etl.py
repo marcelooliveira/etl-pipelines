@@ -96,7 +96,7 @@ def create_markdown_table(df):
     for index, row in df.iterrows():
         row_values = [str(val) for val in row.tolist()]
         # Right-align the last three columns
-        row_values[-3:] = [f" {val}" for val in row_values[-2:]]
+        row_values[-3:] = [f" {val}" for val in row_values[-3:]]
         markdown_lines.append("| " + " | ".join(row_values) + " |")
 
     return "\n".join(markdown_lines)
