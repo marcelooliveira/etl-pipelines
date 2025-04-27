@@ -185,9 +185,8 @@ def load_data(df):
 
 def etl_pipeline():
     raw_data = extract_data()
+    validated_data = validate_data(raw_data)
     cleaned_data = transform_data(raw_data)
-    validated_data = validate_data(cleaned_data)
-    load_data(validated_data)
     load_data(cleaned_data)
 
 if __name__ == "__main__":
