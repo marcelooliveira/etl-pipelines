@@ -49,7 +49,7 @@ def transform_data(data):
         "last_updated"
     ]]
     df.columns = [
-        "ID", "Symbol", "Name", "Image URL", "Current Price", "Market Cap",
+        "Id", "Symbol", "Name", "Image URL", "Current Price", "Market Cap",
         "Market Cap Rank", "Fully Diluted Valuation", "Total Volume",
         "High 24h", "Low 24h", "Price Change 24h",
         "Price Change % 24h", "Market Cap Change 24h",
