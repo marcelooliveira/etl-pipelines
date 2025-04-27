@@ -27,7 +27,7 @@ def validate_data(df):
         "Id": pa.Column(str),
         "Symbol": pa.Column(str),
         "Name": pa.Column(str),
-        "Current Price": pa.Column(float),
+        "Current Price": pa.Column(object),
         "Market Cap": pa.Column(int),
         "Total Volume": pa.Column(int),
     })
@@ -185,8 +185,9 @@ def load_data(df):
 
 def etl_pipeline():
     raw_data = extract_data()
-    validated_data = validate_data(raw_data)
     cleaned_data = transform_data(raw_data)
+    validated_data = validate_data(cleaned_data)
+    load_data(validated_data)
     load_data(cleaned_data)
 
 if __name__ == "__main__":
