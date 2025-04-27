@@ -82,10 +82,10 @@ def create_markdown_table(df):
     """Creates a formatted Markdown table with right-aligned numerical columns."""
     df['Icon'] = df['Symbol'].apply(get_crypto_icon_url)
     df['Current Price'] = df['Current Price'].apply(format_currency)
-    df['Price Change 24h'] = df['Price Change 24h'].apply(format_currency)
-    df['Price Change % 24h'] = df['Price Change % 24h'].apply(lambda x: f"{x:.2f}%")
+    df['Price Change 24H'] = df['Price Change 24H'].apply(format_currency)
+    df['Price Change Percentage 24H'] = df['Price Change Percentage 24H'].apply(lambda x: f"{x:.2f}%")
     df['Market Cap'] = df['Market Cap'].apply(format_market_cap)
-    df = df[['Icon', 'Name', 'Current Price', 'Price Change 24h', 'Price Change % 24h', 'Market Cap']]
+    df = df[['Icon', 'Name', 'Current Price', 'Price Change 24H', 'Price Change Percentage 24H', 'Market Cap']]
 
     # Create the Markdown string with right alignment for the last 3 columns
     markdown_lines = ["| " + " | ".join(df.columns) + " |"]
