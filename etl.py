@@ -28,15 +28,16 @@ def validate_data(df):
         "Symbol": pa.Column(str),
         "Name": pa.Column(str),
         "Current Price": pa.Column(float),
-        "Price Change % 1h": pa.Column(int),
-        "Price Change % 24h": pa.Column(int),
+        "Price Change 24h": pa.Column(float),
+        "Price Change % 24h": pa.Column(float),
+        "Market Cap": pa.Column(int),
     })
     return schema.validate(df)
 
 def transform_data(data):
     print("Transforming data")
     df = pd.json_normalize(data)
-    df = df[["id", "symbol", "name", "current_price", "price_change_percentage_1h", "price_change_percentage_24h"]]
+    df = df[["id", "symbol", "name", "current_price", "price_change_24h", "price_change_percentage_24h", "market_cap"]]
     df.columns = [col.replace("_", " ").title() for col in df.columns]
     print("Data transformation complete")
     return df
@@ -81,9 +82,10 @@ def create_markdown_table(df):
     """Creates a formatted Markdown table with right-aligned numerical columns."""
     df['Icon'] = df['Symbol'].apply(get_crypto_icon_url)
     df['Current Price'] = df['Current Price'].apply(format_currency)
-    # df['Price Change % 1h'] = df['Price Change % 1h'].apply(format_market_cap)
-    # df['Price Change % 24h'] = df['Price Change % 24h'].apply(format_market_cap)
-    df = df[['Icon', 'Name', 'Current Price', 'Price Change % 1h', 'Price Change % 24h']]
+    df['Price Change 24h'] = df['Price Change 24h'].apply(format_currency)
+    df['Price Change % 24h'] = df['Price Change % 24h'].apply(lambda x: f"{x:.2f}%")
+    df['Market Cap'] = df['Market Cap'].apply(format_market_cap)
+    df = df[['Icon', 'Name', 'Current Price', 'Price Change 24h', 'Price Change % 24h', 'Market Cap']]
 
     # Create the Markdown string with right alignment for the last 3 columns
     markdown_lines = ["| " + " | ".join(df.columns) + " |"]
