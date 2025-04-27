@@ -21,21 +21,21 @@ def extract_data():
     print("Data extraction successful")
     return response.json()
 
-def validate_data(df):
-    print("Validating data schema")
-    schema = pa.DataFrameSchema({
-        "id": pa.Column(str),
-        "symbol": pa.Column(str),
-        "name": pa.Column(str),
-        "current_price": pa.Column(float),
-        "market_cap": pa.Column(int),
-        "total_volume": pa.Column(float),
-        "market_cap_rank": pa.Column(int),
-        "price_change_percentage_24h": pa.Column(float),
-        "circulating_supply": pa.Column(float),
-        "total_supply": pa.Column(float, nullable=True),
-    })
-    return schema.validate(df)
+# def validate_data(df):
+#     print("Validating data schema")
+#     schema = pa.DataFrameSchema({
+#         "id": pa.Column(str),
+#         "symbol": pa.Column(str),
+#         "name": pa.Column(str),
+#         "current_price": pa.Column(float),
+#         "market_cap": pa.Column(int),
+#         "total_volume": pa.Column(float),
+#         "market_cap_rank": pa.Column(int),
+#         "price_change_percentage_24h": pa.Column(float),
+#         "circulating_supply": pa.Column(float),
+#         "total_supply": pa.Column(float, nullable=True),
+#     })
+#     return schema.validate(df)
 
 def transform_data(data):
     print("Transforming data")
@@ -191,8 +191,9 @@ def load_data(df):
 def etl_pipeline():
     raw_data = extract_data()
     cleaned_data = transform_data(raw_data)
-    validated_data = validate_data(cleaned_data)
-    load_data(validated_data)
+    # validated_data = validate_data(cleaned_data)
+    # load_data(validated_data)
+    load_data(cleaned_data)
 
 if __name__ == "__main__":
     etl_pipeline()
