@@ -1,21 +1,28 @@
 version: 2.1
 
+orbs:
+  aws-cli: circleci/aws-cli@5.3.2
+  python: circleci/python@3.1.0
+
 jobs:
   build:
     docker:
       - image: cimg/python:3.10
     steps:
       - checkout
+
       - run:
           name: Install dependencies
           command: |
             python -m pip install --upgrade pip
             pip install -r requirements.txt
+
       - run:
           name: Run ETL pipeline
           command: python etl.py
+
       - run:
-          name: List files *before* upload
+          name: List files before upload
           command: |
             echo "Current directory:"
             pwd
@@ -23,48 +30,28 @@ jobs:
             ls -l data/
             echo "Listing files in the root directory:"
             ls -l
-      - store_artifacts:
-          path: data/crypto.md
-          destination: crypto-markdown
-      - run:
-          name: Configure AWS credentials
-          command: |
-            echo 'export AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID"' >> $BASH_ENV
-            echo 'export AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY"' >> $BASH_ENV
-            echo 'export AWS_SESSION_TOKEN="$AWS_SESSION_TOKEN"' >> $BASH_ENV
-            echo 'export AWS_REGION="$AWS_REGION"' >> $BASH_ENV
-            echo 'export S3_BUCKET="$S3_BUCKET"' >> $BASH_ENV
-            source $BASH_ENV
-          environment:
-            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
-            AWS_REGION: ${{ vars.AWS_REGION }}
-            S3_BUCKET: ${{ vars.S3_BUCKET }}
+
+      - persist_to_workspace:
+          root: .
+          paths:
+            - data/crypto.md
+
+      - aws-cli/setup:
+          profile_name: default
+
       - run:
           name: Create S3 bucket if it doesn't exist
           command: |
             aws s3 ls s3://${S3_BUCKET}/ || aws s3 mb s3://${S3_BUCKET} --region ${AWS_REGION}
-          environment:
-            AWS_REGION: ${{ vars.AWS_REGION }}
-            S3_BUCKET: ${{ vars.S3_BUCKET }}
+
       - run:
           name: Upload to S3 with public access and print URL
           command: |
             aws s3 cp data/crypto.md s3://${S3_BUCKET}/crypto.md --acl public-read
             echo "Uploaded to: https://s3.${AWS_REGION}.amazonaws.com/${S3_BUCKET}/crypto.md"
-          environment:
-            AWS_REGION: ${{ vars.AWS_REGION }}
-            S3_BUCKET: ${{ vars.S3_BUCKET }}
 
 workflows:
-  python-etl-ci:
+  version: 2
+  build_and_deploy:
     jobs:
       - build
-    triggers:
-      - push:
-          branches:
-            - main
-      - pull_request:
-          branches:
-            - main
