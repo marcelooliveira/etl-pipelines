@@ -1,0 +1,59 @@
+version: 2.1
+
+orbs:
+  aws-cli: circleci/aws-cli@4.1.1
+  python: circleci/python@2.1.1
+
+jobs:
+  build:
+    docker:
+      - image: cimg/python:3.10
+    steps:
+      - checkout
+
+      - run:
+          name: Install dependencies
+          command: |
+            python -m pip install --upgrade pip
+            pip install -r requirements.txt
+
+      - run:
+          name: Run ETL pipeline
+          command: python etl.py
+
+      - run:
+          name: List files before upload
+          command: |
+            echo "Current directory:"
+            pwd
+            echo "Listing files in data directory:"
+            ls -l data/
+            echo "Listing files in the root directory:"
+            ls -l
+
+      - persist_to_workspace:
+          root: .
+          paths:
+            - data/crypto.md
+
+      - aws-cli/setup:
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          aws-region: AWS_REGION
+
+      - run:
+          name: Create S3 bucket if it doesn't exist
+          command: |
+            aws s3 ls s3://${S3_BUCKET}/ || aws s3 mb s3://${S3_BUCKET} --region ${AWS_REGION}
+
+      - run:
+          name: Upload to S3 with public access and print URL
+          command: |
+            aws s3 cp data/crypto.md s3://${S3_BUCKET}/crypto.md --acl public-read
+            echo "Uploaded to: https://s3.${AWS_REGION}.amazonaws.com/${S3_BUCKET}/crypto.md"
+
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - build
