@@ -45,32 +45,15 @@ jobs:
           name: Load Data
           command: python etl.py load_data
 
-
-      - run:
-          name: Debug file location
-          command: ls -R
-
-      - run:
-          name: Ensure file exists
-          command: test -f data/crypto.md || (echo "Missing crypto.md!" && exit 1)
-
-      - persist_to_workspace:
-          root: .
-          paths:
-            - data/crypto.md
-
-      - attach_workspace:
-          at: .
-
       - run:
           name: List files after workspace
           command: ls -R
 
       - persist_to_workspace:
-          root: .
           paths:
-            - src/lambda
-
+            - "."
+          root: "~"
+        
   upload:
     docker:
       - image: cimg/python:3.10
