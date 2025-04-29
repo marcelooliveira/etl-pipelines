@@ -2,6 +2,7 @@ import requests
 import pandas as pd
 import pandera as pa
 import os
+import json
 from datetime import datetime
 
 def extract_data():
@@ -16,8 +17,14 @@ def extract_data():
     }
     response = requests.get(url, params=params)
     response.raise_for_status()
-    print("Data extraction successful")
-    return response.json()
+    data = response.json()
+
+    os.makedirs("data", exist_ok=True)
+    with open("data/raw_data.json", "w") as f:
+        json.dump(data, f)
+    print("Raw data saved to data/raw_data.json")
+
+    return data
 
 def validate_data(df):
     print("Validating data schema")

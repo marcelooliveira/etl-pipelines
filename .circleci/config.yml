@@ -21,16 +21,6 @@ jobs:
           name: Run ETL pipeline
           command: python etl.py
 
-      - run:
-          name: List files before upload
-          command: |
-            echo "Current directory:"
-            pwd
-            echo "Listing files in data directory:"
-            ls -l data/
-            echo "Listing files in the root directory:"
-            ls -l
-
       - persist_to_workspace:
           root: .
           paths:
@@ -46,7 +36,6 @@ jobs:
             echo "Uploaded to: https://${S3_BUCKET}.s3.${AWS_REGION}.amazonaws.com/crypto.md"
 
 workflows:
-  version: 2
   build_and_deploy:
     jobs:
       - build
