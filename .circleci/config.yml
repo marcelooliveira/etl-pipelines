@@ -18,8 +18,20 @@ jobs:
             pip install -r requirements.txt
 
       - run:
-          name: Run ETL pipeline
-          command: python etl.py
+          name: Extract Data
+          command: python etl.py extract_data
+
+      - run:
+          name: Transform Data
+          command: python etl.py transform_data
+
+      - run:
+          name: Validate Data
+          command: python etl.py validate_data
+
+      - run:
+          name: Load Data
+          command: python etl.py load_data
 
       - persist_to_workspace:
           root: .

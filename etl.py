@@ -124,7 +124,11 @@ def create_markdown_table(df):
 
     return "\n".join(markdown_lines)
 
-def load_data(df):
+def load_data(df=None):
+    if df is None:
+        print("Loading validated data from file")
+        df = pd.read_csv("data/validated_data.csv")
+
     print("Saving cryptocurrency data to Markdown file")
     md_path = "data/crypto.md"  # Define the Markdown file path
     md_dir = os.path.dirname(md_path) # Get the directory
