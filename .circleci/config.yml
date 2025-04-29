@@ -45,7 +45,6 @@ jobs:
           name: Load Data
           command: |
             python etl.py load_data
-            cat data/crypto.md
 
       - persist_to_workspace:
           root: .
