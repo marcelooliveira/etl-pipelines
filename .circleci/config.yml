@@ -33,11 +33,6 @@ jobs:
           name: Load Data
           command: python etl.py load_data
 
-      - persist_to_workspace:
-          root: .
-          paths:
-            - data/crypto.md
-
       - aws-cli/setup:
           profile_name: default
 
