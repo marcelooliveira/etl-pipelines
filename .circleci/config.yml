@@ -9,6 +9,9 @@ jobs:
     docker:
       - image: cimg/python:3.10
     steps:
+      - attach_workspace:
+          at: ./
+
       - checkout
 
       - run:
@@ -42,7 +45,7 @@ jobs:
             ls -l data/
             echo "Listing files in the root directory:"
             ls -l
-            
+
       - aws-cli/setup:
           profile_name: default
 
