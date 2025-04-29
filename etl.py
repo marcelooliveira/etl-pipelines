@@ -149,12 +149,3 @@ def load_data(df=None):
         f.write(footer + "\n")
 
     print(f"Cryptocurrency data successfully saved to: {md_path}")
-
-def etl_pipeline():
-    raw_data = extract_data()
-    cleaned_data = transform_data(raw_data)
-    validated_data = validate_data(cleaned_data)
-    load_data(validated_data)
-
-if __name__ == "__main__":
-    etl_pipeline()
