@@ -33,6 +33,16 @@ jobs:
           name: Load Data
           command: python etl.py load_data
 
+      - run:
+          name: List files before upload
+          command: |
+            echo "Current directory:"
+            pwd
+            echo "Listing files in data directory:"
+            ls -l data/
+            echo "Listing files in the root directory:"
+            ls -l
+            
       - aws-cli/setup:
           profile_name: default
 
