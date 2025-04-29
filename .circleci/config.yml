@@ -40,31 +40,6 @@ jobs:
           profile_name: default
 
       - run:
-          name: Create S3 bucket if it doesn't exist
-          command: |
-            aws s3 ls s3://${S3_BUCKET}/ || aws s3 mb s3://${S3_BUCKET} --region ${AWS_REGION}
-
-      - run:
-          name: Configure bucket for public access
-          command: |
-            # Disable block public access
-            aws s3api put-public-access-block --bucket ${S3_BUCKET} --public-access-block-configuration BlockPublicAcls=false,IgnorePublicAcls=false,BlockPublicPolicy=false,RestrictPublicBuckets=false
-
-            # Set bucket policy for public read
-            aws s3api put-bucket-policy --bucket ${S3_BUCKET} --policy '{
-              "Version": "2012-10-17",
-              "Statement": [
-                {
-                  "Sid": "AllowPublicReadAccess",
-                  "Effect": "Allow",
-                  "Principal": "*",
-                  "Action": "s3:GetObject",
-                  "Resource": "arn:aws:s3:::${S3_BUCKET}/*"
-                }
-              ]
-            }'
-
-      - run:
           name: Upload to S3 and print URL
           command: |
             aws s3 cp data/crypto.md s3://${S3_BUCKET}/crypto.md
