@@ -19,7 +19,6 @@ jobs:
   etl:
     docker:
       - image: cimg/python:3.10
-    working_directory: ~/project
     steps:
       - attach_workspace:
           at: ./
@@ -46,26 +45,18 @@ jobs:
           command: |
             python etl.py load_data
 
-      - persist_to_workspace:
-          root: .
-          paths:
-            - .
-            
-      - attach_workspace:
-          at: .
+      - store_artifacts:
+          path: data/crypto.md
+          destination: output-data
 
       - run:
-          name: List files after workspace
+          name: List files
           command: ls -R
         
   upload:
     docker:
       - image: cimg/python:3.10
-    working_directory: ~/project
     steps:
-      - attach_workspace:
-          at: ~/
-
       - aws-cli/setup:
           profile_name: default
 
