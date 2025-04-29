@@ -36,6 +36,14 @@ jobs:
           name: Load Data
           command: python etl.py load_data
 
+      - persist_to_workspace:
+          root: .
+          paths:
+            - data/crypto.md  # or just "data" to persist the whole folder
+
+      - attach_workspace:
+          at: .
+          
       - run:
           name: List files before upload
           command: |
