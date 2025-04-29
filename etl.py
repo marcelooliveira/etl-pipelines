@@ -1,3 +1,4 @@
+from curses import echo
 import requests
 import pandas as pd
 import pandera as pa
@@ -135,6 +136,7 @@ def load_data(df=None):
     if md_dir: # Check if the directory exists
         os.makedirs(md_dir, exist_ok=True)  # Create the directory if it doesn't exist
         print(f"Markdown directory created: {md_dir}") # Log
+        echo(md_dir)
 
     title = "# Top 10 Cryptocurrencies by Market Cap"
     description = "Data obtained from the [CoinGecko API](https://api.coingecko.com/api/v3/coins/markets)."
