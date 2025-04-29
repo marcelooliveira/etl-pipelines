@@ -49,7 +49,11 @@ def transform_data(data=None):
 
     return df
 
-def validate_data(df):
+def validate_data(df=None):
+    if df is None:
+        print("Loading transformed data from file")
+        df = pd.read_csv("data/transformed_data.csv")
+
     print("Validating data schema")
     schema = pa.DataFrameSchema({
         "Id": pa.Column(str),
@@ -59,7 +63,12 @@ def validate_data(df):
         "Price Change 24H": pa.Column(object),
         "Market Cap": pa.Column(int),
     })
-    return schema.validate(df)
+    validated_df = schema.validate(df)
+
+    validated_df.to_csv("data/validated_data.csv", index=False)
+    print("Validated data saved to data/validated_data.csv")
+
+    return validated_df
 
 def format_currency(value):
     """Formats a numeric value as currency with commas for thousands."""
