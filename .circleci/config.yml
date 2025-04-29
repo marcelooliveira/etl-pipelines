@@ -5,15 +5,24 @@ orbs:
   python: circleci/python@2.1.1
 
 jobs:
-  build:
+  project_checkout:
+    machine:
+      image: ubuntu-2204:edge
+      docker_layer_caching: true
+    steps:
+      - checkout
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
+  etl:
     docker:
       - image: cimg/python:3.10
+    working_directory: ~/project
     steps:
       - attach_workspace:
           at: ./
-
-      - checkout
-
       - run:
           name: Install dependencies
           command: |
@@ -36,14 +45,6 @@ jobs:
           name: Load Data
           command: python etl.py load_data
 
-      - persist_to_workspace:
-          root: .
-          paths:
-            - data/crypto.md  # or just "data" to persist the whole folder
-
-      - attach_workspace:
-          at: .
-          
       - run:
           name: List files before upload
           command: |
@@ -51,6 +52,23 @@ jobs:
             pwd
             echo "Listing files recursively:"
             ls -R
+
+      - persist_to_workspace:
+          paths:
+            - "."
+          root: "~"
+      - persist_to_workspace:
+          root: .
+          paths:
+            - src/lambda
+
+  upload:
+    docker:
+      - image: cimg/python:3.10
+    working_directory: ~/project
+    steps:
+      - attach_workspace:
+          at: ./
 
       - aws-cli/setup:
           profile_name: default
@@ -62,6 +80,13 @@ jobs:
             echo "Uploaded to: https://${S3_BUCKET}.s3.${AWS_REGION}.amazonaws.com/crypto.md"
 
 workflows:
-  build_and_deploy:
+ ci-cd:
     jobs:
-      - build
+      - project_checkout
+      - etl:
+          requires:
+            - project_checkout
+      - upload:
+          requires:
+            - etl
+
