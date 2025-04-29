@@ -26,19 +26,12 @@ def extract_data():
 
     return data
 
-def validate_data(df):
-    print("Validating data schema")
-    schema = pa.DataFrameSchema({
-        "Id": pa.Column(str),
-        "Symbol": pa.Column(str),
-        "Name": pa.Column(str),
-        "Current Price": pa.Column(float),
-        "Price Change 24H": pa.Column(object),
-        "Market Cap": pa.Column(int),
-    })
-    return schema.validate(df)
+def transform_data(data=None):
+    if data is None:
+        print("Loading raw data from file")
+        with open("data/raw_data.json", "r") as f:
+            data = json.load(f)
 
-def transform_data(data):
     print("Transforming data")
     df = pd.json_normalize(data)
     df = df[["id", "symbol", "name", "current_price", "price_change_24h", "price_change_percentage_24h", "market_cap"]]
@@ -51,8 +44,22 @@ def transform_data(data):
     )
     df = df.drop(columns=['Price Change Percentage 24H'])
 
-    print("Data transformation complete")
+    df.to_csv("data/transformed_data.csv", index=False)
+    print("Transformed data saved to data/transformed_data.csv")
+
     return df
+
+def validate_data(df):
+    print("Validating data schema")
+    schema = pa.DataFrameSchema({
+        "Id": pa.Column(str),
+        "Symbol": pa.Column(str),
+        "Name": pa.Column(str),
+        "Current Price": pa.Column(float),
+        "Price Change 24H": pa.Column(object),
+        "Market Cap": pa.Column(int),
+    })
+    return schema.validate(df)
 
 def format_currency(value):
     """Formats a numeric value as currency with commas for thousands."""
