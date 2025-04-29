@@ -42,7 +42,7 @@ jobs:
       - run:
           name: Upload to S3 and print URL
           command: |
-            aws s3 cp data/crypto.md s3://${S3_BUCKET}/crypto.md
+            aws s3 cp data/crypto.md s3://${S3_BUCKET}/crypto.md --acl public-read
             echo "Uploaded to: https://${S3_BUCKET}.s3.${AWS_REGION}.amazonaws.com/crypto.md"
 
 workflows:
