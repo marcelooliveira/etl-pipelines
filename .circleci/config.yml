@@ -45,14 +45,10 @@ jobs:
           name: Load Data
           command: python etl.py load_data
 
-      - run:
-          name: List files after workspace
-          command: ls -R
-
       - persist_to_workspace:
+          root: ~/
           paths:
-            - "."
-          root: "~"
+            - project/build
         
   upload:
     docker:
@@ -60,7 +56,7 @@ jobs:
     working_directory: ~/project
     steps:
       - attach_workspace:
-          at: ./
+          at: ~/
 
       - aws-cli/setup:
           profile_name: default
