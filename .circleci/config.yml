@@ -47,7 +47,7 @@ jobs:
 
       - run:
           name: List files after workspace
-          command: ls -R ~/project
+          command: ls -R ~/
 
       - persist_to_workspace:
           root: ~/
