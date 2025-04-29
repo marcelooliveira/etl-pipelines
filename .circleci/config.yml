@@ -45,14 +45,17 @@ jobs:
           name: Load Data
           command: python etl.py load_data
 
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+            
+      - attach_workspace:
+          at: .
+
       - run:
           name: List files after workspace
-          command: ls -R ~/
-
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - project/build
+          command: ls -R
         
   upload:
     docker:
