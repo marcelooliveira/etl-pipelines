@@ -1,4 +1,3 @@
-import logging
 import sys
 import requests
 import pandas as pd
@@ -6,14 +5,6 @@ import pandera as pa
 import os
 import json
 from datetime import datetime
-
-# Configure logging
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    stream=sys.stdout)  # Send logs to stdout
-
-# Create a logger
-logger = logging.getLogger(__name__)
 
 def extract_data():
     print("Fetching cryptocurrency data from CoinGecko API")
@@ -145,9 +136,6 @@ def load_data(df=None):
     if md_dir: # Check if the directory exists
         os.makedirs(md_dir, exist_ok=True)  # Create the directory if it doesn't exist
         print(f"Markdown directory created: {md_dir}") # Log
-        #log current directory
-        logger.info(f"Current directory: {os.getcwd()}") # Log current directory
-        logger.info(f"Markdown directory created: {md_dir}") # Log
 
     title = "# Top 10 Cryptocurrencies by Market Cap"
     description = "Data obtained from the [CoinGecko API](https://api.coingecko.com/api/v3/coins/markets)."
@@ -162,3 +150,22 @@ def load_data(df=None):
         f.write(footer + "\n")
 
     print(f"Cryptocurrency data successfully saved to: {md_path}")
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("No command provided. Available commands: extract_data, transform_data, validate_data, load_data, etl_pipeline")
+        sys.exit(1)
+
+    command = sys.argv[1]
+
+    if command == "extract_data":
+        extract_data()
+    elif command == "transform_data":
+        transform_data()
+    elif command == "validate_data":
+        validate_data()
+    elif command == "load_data":
+        load_data()
+    else:
+        print(f"Unknown command: {command}")
+        sys.exit(1)

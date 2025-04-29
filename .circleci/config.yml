@@ -42,17 +42,13 @@ jobs:
 
       - run:
           name: Load Data
-          command: |
-            python etl.py load_data
+          command: python etl.py load_data
 
       - persist_to_workspace:
           root: .
           paths:
-            - data/crypto.md
-
-      - attach_workspace:
-          at: .
-
+            - .
+            
       - run:
           name: Verify file exists
           command: |
@@ -67,6 +63,9 @@ jobs:
     docker:
       - image: cimg/python:3.10
     steps:
+      - attach_workspace:
+          at: .
+
       - aws-cli/setup:
           profile_name: default
 
