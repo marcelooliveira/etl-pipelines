@@ -45,6 +45,10 @@ jobs:
           name: Load Data
           command: python etl.py load_data
 
+      - run:
+          name: List files after workspace
+          command: ls -R ~/project
+
       - persist_to_workspace:
           root: ~/
           paths:
