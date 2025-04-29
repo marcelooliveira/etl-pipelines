@@ -41,8 +41,8 @@ jobs:
           command: |
             echo "Current directory:"
             pwd
-            echo "Listing files in the root directory:"
-            ls -l
+            echo "Listing files recursively:"
+            ls -R
 
       - aws-cli/setup:
           profile_name: default
