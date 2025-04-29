@@ -48,7 +48,7 @@ jobs:
           name: Configure bucket for public access
           command: |
             # Disable block public access
-            aws s3api put-bucket-public-access-block --bucket ${S3_BUCKET} --public-access-block-configuration BlockPublicAcls=false,IgnorePublicAcls=false,BlockPublicPolicy=false,RestrictPublicBuckets=false
+            aws s3api put-public-access-block --bucket ${S3_BUCKET} --public-access-block-configuration BlockPublicAcls=false,IgnorePublicAcls=false,BlockPublicPolicy=false,RestrictPublicBuckets=false
 
             # Set bucket policy for public read
             aws s3api put-bucket-policy --bucket ${S3_BUCKET} --policy '{
