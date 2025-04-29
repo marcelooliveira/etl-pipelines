@@ -41,8 +41,6 @@ jobs:
           command: |
             echo "Current directory:"
             pwd
-            echo "Listing files in data directory:"
-            ls -l data/
             echo "Listing files in the root directory:"
             ls -l
 
