@@ -132,8 +132,7 @@ def load_data(df=None):
 
     print("Saving cryptocurrency data to Markdown file")
     md_path = "data/crypto.md"  # Define the Markdown file path
-    # md_dir = os.path.dirname(md_path) # Get the directory
-    md_dir = os.path.join(os.getcwd(), "data", "crypto.md")
+    md_dir = os.path.dirname(md_path) # Get the directory
     if md_dir: # Check if the directory exists
         os.makedirs(md_dir, exist_ok=True)  # Create the directory if it doesn't exist
         print(f"Markdown directory created: {md_dir}") # Log

@@ -45,13 +45,23 @@ jobs:
           command: |
             python etl.py load_data
 
+      - persist_to_workspace:
+          root: .
+          paths:
+            - data/crypto.md
+
+      - attach_workspace:
+          at: .
+
+      - run:
+          name: Verify file exists
+          command: |
+            ls -l data
+            cat data/crypto.md
+
       - store_artifacts:
           path: data/crypto.md
           destination: output-data
-
-      - run:
-          name: List files
-          command: ls -R
         
   upload:
     docker:
