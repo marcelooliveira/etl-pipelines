@@ -72,7 +72,7 @@ jobs:
       - run:
           name: Create S3 bucket
           command: |
-            aws s3api create-bucket --bucket ${S3_BUCKET} --region ${AWS_REGION} --object-ownership BucketOwnerEnforced --no-cli-pager
+            aws s3api create-bucket --bucket ${S3_BUCKET} --region ${AWS_REGION} --no-cli-pager
             echo "Bucket created: ${S3_BUCKET}"
             aws s3api put-public-access-block --bucket ${S3_BUCKET} --public-access-block-configuration BlockPublicAcls=false,IgnorePublicAcls=false,BlockPublicPolicy=false,RestrictPublicBuckets=false            
 
