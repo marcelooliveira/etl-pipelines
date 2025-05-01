@@ -70,6 +70,13 @@ jobs:
           profile_name: default
 
       - run:
+          name: Create S3 bucket
+          command: |
+            aws s3api create-bucket --bucket ${S3_BUCKET} --region ${AWS_REGION} --object-ownership BucketOwnerEnforced --no-cli-pager
+            echo "Bucket created: ${S3_BUCKET}"
+            aws s3api put-public-access-block --bucket ${S3_BUCKET} --public-access-block-configuration BlockPublicAcls=false,IgnorePublicAcls=false,BlockPublicPolicy=false,RestrictPublicBuckets=false            
+
+      - run:
           name: Upload to S3 and print URL
           command: |
             aws s3 cp data/crypto.md s3://${S3_BUCKET}/crypto.md --acl public-read
