@@ -85,7 +85,7 @@ jobs:
             echo "Uploaded to: ${FULL_URL}"
 
 workflows:
- ci-cd:
+  ci-cd:
     jobs:
       - project_checkout
       - etl:
