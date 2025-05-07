@@ -116,25 +116,19 @@ def create_markdown_table(df):
     return "\n".join(markdown_lines)
 
 def get_crypto_icon_url(symbol):
-    """Returns the URL of a tiny icon for a given cryptocurrency symbol."""
+
     base_url = "https://raw.githubusercontent.com/cjdowner/cryptocurrency-icons/master/32/color/"
-    icon_map = {
-        "btc": "btc.png",
-        "eth": "eth.png",
-        "usdt": "usdt.png",
-        "xrp": "xrp.png",
-        "bnb": "bnb.png",
-        "sol": "sol.png",
-        "usdc": "usdc.png",
-        "doge": "doge.png",
-        "ada": "ada.png",
-        "trx": "trx.png",
-    }
-    filename = icon_map.get(symbol.lower())
-    if filename:
-        return f'<img src="{base_url}{filename}" width="16" height="16" align="absmiddle"> '
-    else:
-        return "🪙 " # Default coin emoji as fallback
+    filename = f"{symbol.lower()}.png"
+    icon_url = f"{base_url}{filename}"
+
+    try:
+        response = requests.head(icon_url, timeout=3)
+        if response.status_code == 200:
+            return f'<img src="{icon_url}" width="16" height="16" align="absmiddle"> '
+    except requests.RequestException:
+        pass
+
+    return "¤ "  # Fallback emoji if icon not found
 
 def format_currency(value):
     """Formats a numeric value as currency with commas for thousands."""
