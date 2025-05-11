@@ -72,10 +72,10 @@ jobs:
           profile_name: new-profile
           role_arn: arn:aws:iam::${AWS_ACCOUNT_ID}:role/circle-role
           source_profile: default
-      - run: >-
-          aws sts assume-role --role-arn
-          "arn:aws:iam::${AWS_ACCOUNT_ID}:role/circle-role" --role-session-name
-          AWSCLI-Session
+      # - run: >-
+      #     aws sts assume-role --role-arn
+      #     "arn:aws:iam::${AWS_ACCOUNT_ID}:role/circle-role" --role-session-name
+      #     AWSCLI-Session
 
       - run:
           name: Create a publicly accessible S3 bucket
