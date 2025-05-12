@@ -101,7 +101,6 @@ jobs:
             aws s3api create-bucket \
               --bucket "${S3_BUCKET}" \
               --region "${AWS_REGION}" \
-              --create-bucket-configuration LocationConstraint="${AWS_REGION}" \
               --no-cli-pager
 
             echo "Bucket created: ${S3_BUCKET}"
