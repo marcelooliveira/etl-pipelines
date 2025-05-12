@@ -70,7 +70,7 @@ jobs:
       - aws-cli/setup
 
       - run:
-          name: Assume the IAM role
+          name: Upload to S3
           command: |
             echo "Assuming role arn:aws:iam::${AWS_ACCOUNT_ID}:role/circleci-role..."
 
@@ -79,7 +79,7 @@ jobs:
             unset AWS_SECRET_ACCESS_KEY
             unset AWS_SESSION_TOKEN
 
-            # Step 1: 
+            # Step 1: Assume the IAM role
             ASSUME_ROLE_OUTPUT=$(aws sts assume-role \
               --role-arn "arn:aws:iam::${AWS_ACCOUNT_ID}:role/circleci-role" \
               --role-session-name "manual-session")
@@ -95,9 +95,7 @@ jobs:
 
             echo "Role assumed successfully."
 
-      - run:
-          name: Create the S3 bucket
-          command: |
+            # Step 2: Create the S3 bucket
             echo "Creating S3 bucket: ${S3_BUCKET} in region: ${AWS_REGION}..."
 
             aws s3api create-bucket \
@@ -121,9 +119,6 @@ jobs:
 
             echo "Bucket public access and ownership controls configured."
 
-      - run:
-          name: Create the S3 bucket
-          command: |
             # Step 3: Upload a file with public-read ACL
             echo "Uploading crypto.md to s3://${S3_BUCKET}/crypto.md..."
 
