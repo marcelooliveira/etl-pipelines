@@ -78,13 +78,13 @@ jobs:
             export AWS_SECRET_ACCESS_KEY=$(echo $ASSUME_ROLE_OUTPUT | jq -r '.Credentials.SecretAccessKey')
             export AWS_SESSION_TOKEN=$(echo $ASSUME_ROLE_OUTPUT | jq -r '.Credentials.SessionToken')
 
-      - run:
-          name: Create a publicly accessible S3 bucket
-          command: |
-            aws s3api create-bucket --bucket ${S3_BUCKET} --region ${AWS_REGION} --no-cli-pager
-            echo "Bucket created: ${S3_BUCKET}"
-            aws s3api put-public-access-block --bucket ${S3_BUCKET} --public-access-block-configuration BlockPublicAcls=false,IgnorePublicAcls=false,BlockPublicPolicy=false,RestrictPublicBuckets=false --no-cli-pager
-            aws s3api put-bucket-ownership-controls --bucket ${S3_BUCKET} --ownership-controls 'Rules=[{ObjectOwnership=BucketOwnerPreferred}]' --no-cli-pager
+      # - run:
+      #     name: Create a publicly accessible S3 bucket
+      #     command: |
+      #       aws s3api create-bucket --bucket ${S3_BUCKET} --region ${AWS_REGION} --no-cli-pager
+      #       echo "Bucket created: ${S3_BUCKET}"
+      #       aws s3api put-public-access-block --bucket ${S3_BUCKET} --public-access-block-configuration BlockPublicAcls=false,IgnorePublicAcls=false,BlockPublicPolicy=false,RestrictPublicBuckets=false --no-cli-pager
+      #       aws s3api put-bucket-ownership-controls --bucket ${S3_BUCKET} --ownership-controls 'Rules=[{ObjectOwnership=BucketOwnerPreferred}]' --no-cli-pager
 
       - run:
           name: Upload publicly accessible page to S3
