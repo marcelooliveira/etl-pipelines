@@ -98,15 +98,14 @@ jobs:
       #       FULL_URL="https://${S3_BUCKET}.s3.${AWS_REGION}.amazonaws.com/crypto.md"
       #       echo "Uploaded to: ${FULL_URL}"
 
-      - aws-s3/sync:
+      - aws-s3/copy:
           auth:
             - aws-cli/setup:
-                role_arn: arn:aws:iam::${AWS_ACCOUNT_ID}
+                profile_name: OIDC-User
+                role_arn: arn:aws:iam::${AWS_ACCOUNT_ID}/role/circleci-role
           from: data/crypto.md
-          to: 's3://${S3_BUCKET}'
-          arguments: | # Optional arguments
-            --acl public-read \
-            --cache-control "max-age=86400"            
+          profile_name: OIDC-User
+          to: s3://${S3_BUCKET}              
 
 workflows:
   ci-cd:
