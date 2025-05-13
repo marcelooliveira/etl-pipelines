@@ -73,12 +73,6 @@ jobs:
           region: ${AWS_REGION}
 
       - run:
-          name: Print OIDC token
-          command: |
-            echo $CIRCLE_OIDC_TOKEN
-            echo | jq -R 'split(".") | .[1] | @base64d | fromjson' <<< "$CIRCLE_OIDC_TOKEN"
-
-      - run:
           name: Prepare S3
           command: |
             # Create the S3 bucket
