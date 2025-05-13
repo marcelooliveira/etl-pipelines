@@ -85,9 +85,15 @@ jobs:
               --role-session-name "manual-session")
 
             # Export temporary credentials
-            export AWS_ACCESS_KEY_ID=$(echo "$ASSUME_ROLE_OUTPUT" | jq -r '.Credentials.AccessKeyId')
-            export AWS_SECRET_ACCESS_KEY=$(echo "$ASSUME_ROLE_OUTPUT" | jq -r '.Credentials.SecretAccessKey')
-            export AWS_SESSION_TOKEN=$(echo "$ASSUME_ROLE_OUTPUT" | jq -r '.Credentials.SessionToken')
+            # export AWS_ACCESS_KEY_ID=$(echo "$ASSUME_ROLE_OUTPUT" | jq -r '.Credentials.AccessKeyId')
+            # export AWS_SECRET_ACCESS_KEY=$(echo "$ASSUME_ROLE_OUTPUT" | jq -r '.Credentials.SecretAccessKey')
+            # export AWS_SESSION_TOKEN=$(echo "$ASSUME_ROLE_OUTPUT" | jq -r '.Credentials.SessionToken')
+
+            echo "export AWS_ACCESS_KEY_ID=$(echo "$ASSUME_ROLE_OUTPUT" | jq -r '.Credentials.AccessKeyId')" >> assumed-role.env
+            echo "export AWS_SECRET_ACCESS_KEY=$(echo "$ASSUME_ROLE_OUTPUT" | jq -r '.Credentials.SecretAccessKey')" >> assumed-role.env
+            echo "export AWS_SESSION_TOKEN=$(echo "$ASSUME_ROLE_OUTPUT" | jq -r '.Credentials.SessionToken')" >> assumed-role.env
+
+            source assumed-role.env
 
             echo "$AWS_ACCESS_KEY_ID"
             echo "$AWS_SECRET_ACCESS_KEY"
@@ -119,9 +125,19 @@ jobs:
 
             echo "Bucket public access and ownership controls configured."
 
+      - persist_to_workspace:
+          root: .
+          paths:
+          - assumed-role.env
+
+      - attach_workspace:
+          at: .
+          
       - run:
           name: Upload to S3
           command: |
+            source assumed-role.env
+            
             # Step 3: Upload a file with public-read ACL
             echo "Uploading crypto.md to s3://${S3_BUCKET}/crypto.md..."
 
