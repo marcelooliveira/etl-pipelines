@@ -67,42 +67,15 @@ jobs:
       - attach_workspace:
           at: .
 
-      - aws-cli/setup
+      - aws-cli/setup:
+          profile_name: OIDC-User
+          role_arn: arn:aws:iam::${AWS_ACCOUNT_ID}:role/circleci-role
 
       - run:
           name: Prepare S3
           command: |
-            echo "Assuming role arn:aws:iam::${AWS_ACCOUNT_ID}:role/circleci-role..."
-
-            # Unset existing session credentials
-            unset AWS_ACCESS_KEY_ID
-            unset AWS_SECRET_ACCESS_KEY
-            unset AWS_SESSION_TOKEN
-
-            # Step 1: Assume the IAM role
-            ASSUME_ROLE_OUTPUT=$(aws sts assume-role \
-              --role-arn "arn:aws:iam::${AWS_ACCOUNT_ID}:role/circleci-role" \
-              --role-session-name "manual-session")
-
-            # Export temporary credentials
-            # export AWS_ACCESS_KEY_ID=$(echo "$ASSUME_ROLE_OUTPUT" | jq -r '.Credentials.AccessKeyId')
-            # export AWS_SECRET_ACCESS_KEY=$(echo "$ASSUME_ROLE_OUTPUT" | jq -r '.Credentials.SecretAccessKey')
-            # export AWS_SESSION_TOKEN=$(echo "$ASSUME_ROLE_OUTPUT" | jq -r '.Credentials.SessionToken')
-
-            echo "export AWS_ACCESS_KEY_ID=$(echo "$ASSUME_ROLE_OUTPUT" | jq -r '.Credentials.AccessKeyId')" >> assumed-role.env
-            echo "export AWS_SECRET_ACCESS_KEY=$(echo "$ASSUME_ROLE_OUTPUT" | jq -r '.Credentials.SecretAccessKey')" >> assumed-role.env
-            echo "export AWS_SESSION_TOKEN=$(echo "$ASSUME_ROLE_OUTPUT" | jq -r '.Credentials.SessionToken')" >> assumed-role.env
-
-            source assumed-role.env
-
-            echo "$AWS_ACCESS_KEY_ID"
-            echo "$AWS_SECRET_ACCESS_KEY"
-            echo "$AWS_SESSION_TOKEN"
-
-            echo "Role assumed successfully."
-
-            # Step 2: Create the S3 bucket
-            echo "Creating S3 bucket: ${S3_BUCKET} in region: ${AWS_REGION}..."
+            # Create the S3 bucket
+            echo "Creating S3 bucket: ${S3_BUCKET}..."
 
             aws s3api create-bucket \
               --bucket "${S3_BUCKET}" \
@@ -111,13 +84,13 @@ jobs:
 
             echo "Bucket created: ${S3_BUCKET}"
 
-            # Step 2b: Configure public access block
+            # Configure public access block
             aws s3api put-public-access-block \
               --bucket "${S3_BUCKET}" \
               --public-access-block-configuration BlockPublicAcls=false,IgnorePublicAcls=false,BlockPublicPolicy=false,RestrictPublicBuckets=false \
               --no-cli-pager
 
-            # Step 2c: Set ownership controls
+            # Set ownership controls
             aws s3api put-bucket-ownership-controls \
               --bucket "${S3_BUCKET}" \
               --ownership-controls 'Rules=[{ObjectOwnership=BucketOwnerPreferred}]' \
@@ -125,35 +98,6 @@ jobs:
 
             echo "Bucket public access and ownership controls configured."
 
-      - persist_to_workspace:
-          root: .
-          paths:
-          - assumed-role.env
-
-      - attach_workspace:
-          at: .
-          
-      # - run:
-      #     name: Upload to S3
-      #     command: |
-      #       source assumed-role.env
-
-      #       # Step 3: Upload a file with public-read ACL
-      #       echo "Uploading crypto.md to s3://${S3_BUCKET}/crypto.md..."
-
-      #       aws s3 cp "data/crypto.md" "s3://${S3_BUCKET}/crypto.md" --acl public-read
-
-      #       FULL_URL="https://${S3_BUCKET}.s3.${AWS_REGION}.amazonaws.com/crypto.md"
-      #       echo "Uploaded to: ${FULL_URL}"
-
-      - run:
-          name: Load Assumed Role Credentials
-          command: |
-            source assumed-role.env
-
-      - aws-cli/setup:
-          profile_name: OIDC-User
-          role_arn: arn:aws:iam::${AWS_ACCOUNT_ID}:role/circleci-role
       - aws-s3/copy:
           from: data/crypto.md
           to: s3://${S3_BUCKET}/crypto.md
