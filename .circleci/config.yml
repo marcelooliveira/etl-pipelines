@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  aws-cli: circleci/aws-cli@4.1.1
+  aws-cli: circleci/aws-cli@4.0.0
   aws-s3: circleci/aws-s3@3.0.0
   python: circleci/python@2.1.1
 
@@ -70,6 +70,13 @@ jobs:
       - aws-cli/setup:
           profile_name: OIDC-User
           role_arn: arn:aws:iam::${AWS_ACCOUNT_ID}:role/circleci-role
+          region: ${AWS_REGION}
+
+      - run:
+          name: Print OIDC token
+          command: |
+            echo $CIRCLE_OIDC_TOKEN
+            echo | jq -R 'split(".") | .[1] | @base64d | fromjson' <<< "$CIRCLE_OIDC_TOKEN"
 
       - run:
           name: Prepare S3
