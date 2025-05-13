@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   aws-cli: circleci/aws-cli@4.1.1
-  aws-s3: circleci/aws-s3@4.1
+  aws-s3: circleci/aws-s3@3.0.0
   python: circleci/python@2.1.1
 
 jobs:
@@ -133,19 +133,34 @@ jobs:
       - attach_workspace:
           at: .
           
+      # - run:
+      #     name: Upload to S3
+      #     command: |
+      #       source assumed-role.env
+
+      #       # Step 3: Upload a file with public-read ACL
+      #       echo "Uploading crypto.md to s3://${S3_BUCKET}/crypto.md..."
+
+      #       aws s3 cp "data/crypto.md" "s3://${S3_BUCKET}/crypto.md" --acl public-read
+
+      #       FULL_URL="https://${S3_BUCKET}.s3.${AWS_REGION}.amazonaws.com/crypto.md"
+      #       echo "Uploaded to: ${FULL_URL}"
+
       - run:
-          name: Upload to S3
+          name: Load Assumed Role Credentials
           command: |
             source assumed-role.env
-            
-            # Step 3: Upload a file with public-read ACL
-            echo "Uploading crypto.md to s3://${S3_BUCKET}/crypto.md..."
 
-            aws s3 cp "data/crypto.md" "s3://${S3_BUCKET}/crypto.md" --acl public-read
+      - aws-s3/copy:
+          from: data/crypto.md
+          to: s3://${S3_BUCKET}/crypto.md
+          arguments: |
+            --acl public-read
 
-            FULL_URL="https://${S3_BUCKET}.s3.${AWS_REGION}.amazonaws.com/crypto.md"
-            echo "Uploaded to: ${FULL_URL}"
-
+      - run:
+          name: Print S3 URL
+          command: |
+            echo "Uploaded to: https://${S3_BUCKET}.s3.${AWS_REGION}.amazonaws.com/crypto.md"
 
 workflows:
   ci-cd:
