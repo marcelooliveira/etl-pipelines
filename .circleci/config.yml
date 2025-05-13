@@ -160,11 +160,6 @@ jobs:
           arguments: |
             --acl public-read
 
-      - run:
-          name: Print S3 URL
-          command: |
-            echo "Uploaded to: https://${S3_BUCKET}.s3.${AWS_REGION}.amazonaws.com/crypto.md"
-
 workflows:
   ci-cd:
     jobs:
