@@ -153,7 +153,7 @@ jobs:
 
       - aws-cli/setup:
           profile_name: OIDC-User
-          role_arn: arn:aws:iam::${AWS_ACCOUNT_ID}/role/circleci-role
+          role_arn: arn:aws:iam::${AWS_ACCOUNT_ID}:role/circleci-role
       - aws-s3/copy:
           from: data/crypto.md
           to: s3://${S3_BUCKET}/crypto.md
