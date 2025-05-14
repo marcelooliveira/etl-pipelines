@@ -61,8 +61,7 @@ jobs:
           destination: output-data
         
   upload:
-    docker:
-      - image: cimg/base:2025.05
+    executor: aws-cli/default
     steps:
       - attach_workspace:
           at: .
