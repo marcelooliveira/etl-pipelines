@@ -62,7 +62,7 @@ jobs:
         
   upload:
     docker:
-      - image: cimg/deploy:2025.01-node
+      - image: cimg/deploy:2025.01
     steps:
       - attach_workspace:
           at: .
